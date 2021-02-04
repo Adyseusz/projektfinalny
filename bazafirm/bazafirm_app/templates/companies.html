@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- table -->
+<table class="table">
+  <thead>
+    <tr class="d-flex">
+      <th scope="col" class="col-1">#</th>
+      <th scope="col" class="col-2">Nazwa</th>
+      <th scope="col" class="col-1">Opis</th>
+      <th scope="col" class="col-1">Miasto</th>
+      <th scope="col" class="col-5" colspan="4">Działa online</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for room in rooms %}
+    <tr class="d-flex">
+      <th scope="row" class="col-1">{{ companies.id }}</th>
+      <td class="col-2">
+        <a href="/company/{{ companies.id }}/">{{ companies.name }}</a>
+      </td>
+      <td class="col-1">{{ companies.description }}</td>
+      {% if company.online_availability %}
+        <td class="col-2" style="color:green;">&#9745;</td>
+      {% else %}
+        <td class="col-2" style="color:red;">&#9746;</td>
+      {% endif %}
+      <td class="col-1">
+        <a href="/company/modify/{{ company.id }}/">edytuj</a>
+      </td>
+      <td class="col-1">
+        <a href="/company/delete/{{ company.id }}/">usuń</a>
+      </td>
+      <td class="col-1">
+        <a href="/company/comment/{{ company.id }}/">napisz komentarz</a>
+      </td>
+    </tr>
+
+      <tr><td colspan="6">Brak firm</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+<!-- table -->
+
+
+{% endblock %}
