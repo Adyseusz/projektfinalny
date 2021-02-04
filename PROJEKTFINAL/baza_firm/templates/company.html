@@ -1,0 +1,60 @@
+{% extends "index.html" %}
+
+
+
+
+{% block content %}
+<div class="row">
+  <div class="column">
+
+
+<h4>Nazwa firmy: </h4><br>
+{{company.name}}
+<br><br><br>
+<h4>Opis:</h4> <br>
+    {{ company.description }}
+<br><br><br>
+
+<h4>Kontakt: </h4><br>
+{% if user.is_authenticated %}
+<a href="mailto:{{company.contact}}">Skontaktuj się z firmą</a>
+{% else %}
+Nie jesteś zalogowany! Musisz być zalogowany aby zobaczyć tą sekcję.
+{% endif %}
+<br><br><br>
+
+<h4>Miejscowość:</h4><br>
+
+{{company.city}}
+
+
+<br><br><br>
+</div>
+<div class="column">
+<h4>Branża:</h4><br>
+
+{{company.services}}
+
+
+<br><br><br>
+<h4>Punkt stacjonarny:</h4><br>
+{{ company.have_stationary }}
+<br><br><br>
+<h4>Komentarze</h4><br>
+{% for c in comments %}
+<b>{{c.author_name}}</b> dodał komentarz
+<b>{{c.comment}}</b><br><br>
+    {% empty %}
+    Brak komentarzy
+{% endfor %}
+
+<br><br><br>
+{% if user.is_superuser %}Admin:
+<a href="/company/delete/{{ company.id }}">Usuń firmę</a>
+{% endif %}
+<br><br><br>
+    </div>
+    </div>
+
+
+{% endblock %}

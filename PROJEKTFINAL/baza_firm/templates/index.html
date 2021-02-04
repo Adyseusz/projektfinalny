@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+  <meta charset="UTF-8">
+  <title>Baza lokalnych firm</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/sticky-footer/">
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+  <style>
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 60px; /* Set the fixed height of the footer here */
+      line-height: 60px; /* Vertically center the text there */
+      background-color: #000000;
+        }
+
+    .column {
+      float: left;
+      width: 50%;
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+
+  </style>
+</head>
+
+<body>
+<!-- Nav -->
+<nav class="navbar navbar-expand-lg navbar navbar-dark bg-dark">
+  <a class="navbar-brand" href="/">BAZA LOKALNYCH FIRM</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+    <div class="navbar-nav">
+      <a class="nav-item nav-link" href="/company-list">Wszystkie firmy</a>
+      <a class="nav-item nav-link" href="/add-company">Dodaj firmę</a>
+      <a class="nav-item nav-link" href="/search-company">Znajdź firmę</a>
+      <a class="nav-item nav-link" href="/comments-list">Wszystkie komentarze</a>
+      <a class="nav-item nav-link" href="/add_comment">Dodaj Komentarz</a>
+
+
+
+
+      {% if user.is_superuser %}
+      <a class="nav-item nav-link">|</a>
+      <a class="nav-item nav-link" href="/admin">Panel Admina</a>
+      <a class="nav-item nav-link" href="{% url 'logout' %}">Wyloguj się</a>
+      {% elif user.is_authenticated %}
+      <a class="nav-item nav-link" href="{% url 'logout' %}">Wyloguj się</a>
+      {% else %}
+
+      <a class="nav-item nav-link">|</a>
+      <a class="nav-item nav-link" href="/accounts/login">Zaloguj się</a>
+      <a class="nav-item nav-link" href="/accounts/signup/">Zarejestruj się</a>
+
+      {% endif %}
+
+    </div>
+  </div>
+</nav>
+<!-- Nav --><br><br>
+<srodek class="srodek">
+  <div class="container">
+{% block content %}
+  {% if user.is_authenticated %}
+<h1>Witaj {{ user.username }}!<br><br>
+  JESTEŚ W BAZIE LOKALNYCH FIRM</h1>
+{% else %}
+  <p><h1>
+  JESTEŚ W BAZIE LOKALNYCH FIRM</h1><br> </p>
+  <a href="{% url 'login' %}">Zaloguj się - to nic nie kosztuje!</a>
+{% endif %}{% endblock %}</center>
+</div>
+
+
+</srodek>
+
+
+
+<!-- Footer -->
+<footer class="footer">
+      <div class="container">
+        <span class="text-muted">Autor: Adrian Dubaniewicz</span>
+      </div>
+    </footer>
+
+<!-- Footer -->
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h3>Wszystkie firmy</h3>
+{% for comp in company %}
+<ul>
+        <li> <a href="/company/{{ comp.id }}">{{comp.name}} </a></li>
+</ul>
+{% endfor %}
+
+
+<!-- table -->
+{% endblock %}

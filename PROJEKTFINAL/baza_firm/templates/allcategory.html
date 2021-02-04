@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h3>Wszystkie kategorie</h3>
+{% for serv in all_services %}
+<ul>
+        <li> {{serv.service}} </li>
+</ul>
+{% endfor %}
+
+
+<!-- table -->
+{% endblock %}
