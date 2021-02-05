@@ -2,13 +2,9 @@
 
 {% block content %}
 <h3>Dodaj komentarz</h3>
-{% if user.is_authenticated %}
 <form method="post">
 {% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="DODAJ KOMENTARZ">
 </form>
-{% else %}
-Nie jesteś zalogowany! Musisz być zalogowany aby móc dodać komentarz.
-{% endif %}
 {% endblock %}

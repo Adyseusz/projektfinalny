@@ -2,13 +2,10 @@
 
 {% block content %}
 <h3>Dodaj firme do bazy</h3>
-{% if user.is_authenticated %}
 <form method="post">
 {% csrf_token %}
 {{ form.as_p }}
 <input type="submit" value="DODAJ FIRMĘ">
 </form>
-{% else %}
-Nie jesteś zalogowany! Musisz być zalogowany aby móc dodać firmę.
-{% endif %}
+
 {% endblock %}

@@ -5,24 +5,54 @@ from .models import Company, CategoryServices, Comments, City, Stationary
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm
-
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 
 # Funkcja wyświetlająca stronę główną
 def Index(request):
+    """
+    Jest to funkcja wyświetlająca stronę główną aplikacji BAZA FIRM
+
+    Korzysta z szablonu html zlokalizowanego w templates/index.html
+
+    Ten szablon jest również podstawą do wszystkich pozostałych.
+    """
     return render(request, "index.html")
 
 # Klasa, która odpowiada za wyświetlanie się wszystkich firm
 class CompanyListView(View):
+    """
+    Klasa odpowiadająca za wyświetlanie wszystkich firm i przekazująca ją do szablonu
+    all.company.html
+    Firmy zawarte są w kontekście 'company'
+    """
     def get(self, request):
         company = Company.objects.all()
         return render(request, "allcompany.html", context={"company": company})
 
 
 
-# Klasa umożliwiająca dodanie firm
-class AddCompanyView(View):
+
+class AddCompanyView(LoginRequiredMixin, View):
+    """
+    Ta klasa odpowiada za dodawanie firm do bazy.
+
+    Aby móc dodać firmę należy być zalogowanym za co odpowiada funkcja LoginRequiredMixin
+
+    Firma po dodaniu wszystkich pól
+    name
+    descriptions
+    contact
+    services
+    city
+    have_stationary
+
+    tworzy nowy url /company/(id nowo stworzonej firmy)
+
+    Wszystkie firmy znajduja się pod adresem /company-list
+    """
     def get(self, request):
         form = AddCompanyForm()
         return render(request, 'addcompany.html', {'form': form})
@@ -31,7 +61,7 @@ class AddCompanyView(View):
         form = AddCompanyForm(request.POST)
         if form.is_valid():
             new_company = Company.objects.create(name=form.cleaned_data['name'], description=form.cleaned_data['description'], contact=form.cleaned_data['contact'], services=form.cleaned_data['services'], city=form.cleaned_data['city'], have_stationary=form.cleaned_data['have_stationary'])
-            #new_company.atribute_comp.set(form.cleaned_data['atribute_company'])
+
 
             return redirect(f'/company/{new_company.id}')
         else:
@@ -39,6 +69,13 @@ class AddCompanyView(View):
 
 # Wyszukiwanie firm przez formularz
 class CompanySearchView(View):
+    """
+    Klasa CompanySearchView pozwala wyszukiwać firmy przez formularz
+
+    Po wpisaniu 3 znaków otrzymujemy znalezione wszystkie firmy odpowiadające znakom.
+
+    """
+
     def get(self, request):
         form = CompanySearchForm()
         return render(request, 'search.html', {'form': form})
@@ -52,8 +89,13 @@ class CompanySearchView(View):
         else:
             return render(request, 'search.html', {'form': form})
 
-#Widok wyświetlania firm na stronie company/
+
 class CompanyView(View):
+    """
+    Widok CompanyView wyświetla stronę firmy z przekazaniem wszystkich danych przez formularz na stronie
+    add-company/
+    Szablon storny znajduje sie w templates/company
+    """
     def get(self, request, company_id):
         company = Company.objects.get(id=company_id)
         contact = Company.objects.all()
@@ -63,8 +105,15 @@ class CompanyView(View):
         return render(request, 'company.html', {'company': company,
                                                 'contact': contact, 'company_id': company_id, 'city': city, 'comments': comments, 'stationary': stationary})
 
-# Usunięcie firmy
-class DeleteCompanyView(View):
+
+class DeleteCompanyView(PermissionRequiredMixin, View):
+    """
+    Widok DeleteCompanyView odpowiada za usunięcie firmy.
+    Usunąć firmę można poprzez /company/delete/(ID FIRMY)
+
+    Widok jest jednak chroniony PermissionRequiredMixin i usunąć może ją tylko superuser.
+    """
+    permission_required = 'baza_firm_app.delete'
     def get(self, request, new_company_id):
         company = Company.objects.get(id=new_company_id)
         company.delete()
@@ -76,8 +125,12 @@ class DeleteCompanyView(View):
         return redirect('company-list')
 
 
-#szybka rejestracja użytkownika
+
 class SignUpView(generic.CreateView):
+    """
+       Szybka rejestracja użtykownika
+
+    """
     form_class = UserCreationForm
     success_url = reverse_lazy('login')
     template_name = 'registration/signup.html'
@@ -86,7 +139,11 @@ class SignUpView(generic.CreateView):
 
 
 #Dodanie komentarza pod opowiednią firmę.
-class AddCommentView(View):
+class AddCommentView(LoginRequiredMixin, View):
+    """
+    Do każdej firmy można przypisać równie
+    """
+    login_required = 'baza_firm_app.add_comment'
     def get(self, request):
         form = AddCommentForm()
         return render(request, 'add_comment.html', {'form': form})
@@ -106,14 +163,18 @@ class AddCommentView(View):
 
 
 
-#Wyświetlanie wszystkich komentarzy
+
 class CommentsListView(View):
+    """
+    Widok pozwala na wyświetlenie wszystkich komentarzy dodanych przez użytkowników.
+    Widok korzysta z szablony templates/allcomments.html
+    """
     def get(self, request):
         all_comment = Comments.objects.all()
         return render(request, 'allcomments.html', context={"all_comment": all_comment})
 
 
-#Wyświetlanie wszystkich możliwych usług
+
 class AllCategoryServicesView(View):
     def get(self, request):
         all_services = CategoryServices.objects.all()
