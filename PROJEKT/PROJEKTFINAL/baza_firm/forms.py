@@ -1,5 +1,5 @@
 import django.forms as forms
-from .models import Company, CategoryServices, Comments, City, Stationary
+from .models import Company, CategoryServices, Comments, City, Stationary, AttributesCompany
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -12,6 +12,7 @@ class AddCompanyForm(forms.Form):
     services = forms.ModelChoiceField(queryset=CategoryServices.objects.all(), label='W jakiej branży działa firma')
     city = forms.ModelChoiceField(queryset=City.objects.all(), label='Wybierz miasto gdzie firma urzęduje')
     have_stationary = forms.ModelChoiceField(queryset=Stationary.objects.all(), label='Czy firma ma punkt stacjonarny?')
+    attribute_company = forms.ModelMultipleChoiceField(queryset=AttributesCompany.objects.all(), label='Wybierz atrybuty', widget=forms.CheckboxSelectMultiple)
 
 class CompanySearchForm(forms.Form):
     name = forms.CharField(label="Nazwa")

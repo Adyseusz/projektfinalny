@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from .forms import AddCompanyForm, CompanySearchForm, AddCommentForm
-from .models import Company, CategoryServices, Comments, City, Stationary
+from .models import Company, CategoryServices, Comments, City, Stationary, AttributesCompany
 from django.urls import reverse_lazy
 from django.views import generic
 from django.contrib.auth.forms import UserCreationForm
@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 
 
-# Funkcja wyświetlająca stronę główną
+
 def Index(request):
     """
     Jest to funkcja wyświetlająca stronę główną aplikacji BAZA FIRM
@@ -21,7 +21,7 @@ def Index(request):
     """
     return render(request, "index.html")
 
-# Klasa, która odpowiada za wyświetlanie się wszystkich firm
+
 class CompanyListView(View):
     """
     Klasa odpowiadająca za wyświetlanie wszystkich firm i przekazująca ją do szablonu
@@ -61,13 +61,13 @@ class AddCompanyView(LoginRequiredMixin, View):
         form = AddCompanyForm(request.POST)
         if form.is_valid():
             new_company = Company.objects.create(name=form.cleaned_data['name'], description=form.cleaned_data['description'], contact=form.cleaned_data['contact'], services=form.cleaned_data['services'], city=form.cleaned_data['city'], have_stationary=form.cleaned_data['have_stationary'])
-
+            new_company.atribute_comp.set(form.cleaned_data['attribute_company'])
 
             return redirect(f'/company/{new_company.id}')
         else:
             return render(request, 'addcompany.html', {'form': form})
 
-# Wyszukiwanie firm przez formularz
+
 class CompanySearchView(View):
     """
     Klasa CompanySearchView pozwala wyszukiwać firmy przez formularz
@@ -102,6 +102,7 @@ class CompanyView(View):
         comments = Comments.objects.filter(company_name=company)
         city = City.objects.all()
         stationary = Stationary.objects.all()
+
         return render(request, 'company.html', {'company': company,
                                                 'contact': contact, 'company_id': company_id, 'city': city, 'comments': comments, 'stationary': stationary})
 

@@ -18,7 +18,7 @@ class Company(models.Model):
     services = models.ForeignKey('CategoryServices', on_delete=models.CASCADE, null=True)
     city = models.ForeignKey('City', on_delete=models.CASCADE, null=True)
     have_stationary = models.ForeignKey('Stationary', on_delete=models.CASCADE, null='Brak danych')
-
+    atribute_comp = models.ManyToManyField('AttributesCompany')
     def __str__(self):
         return self.name
 
