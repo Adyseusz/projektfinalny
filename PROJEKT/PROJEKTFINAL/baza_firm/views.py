@@ -107,23 +107,31 @@ class CompanyView(View):
                                                 'contact': contact, 'company_id': company_id, 'city': city, 'comments': comments, 'stationary': stationary})
 
 
-class DeleteCompanyView(PermissionRequiredMixin, View):
-    """
-    Widok DeleteCompanyView odpowiada za usunięcie firmy.
-    Usunąć firmę można poprzez /company/delete/(ID FIRMY)
+# class DeleteCompanyView(PermissionRequiredMixin, View):
+#     """
+#     Widok DeleteCompanyView odpowiada za usunięcie firmy.
+#     Usunąć firmę można poprzez /company/delete/(ID FIRMY)
+#
+#     Widok jest jednak chroniony PermissionRequiredMixin i usunąć może ją tylko superuser.
+#     """
+#     permission_required = 'baza_firm.delete_company'
+#
+#     def get(self, request, new_company_id):
+#
+#             company = Company.objects.get(id=new_company_id)
+#             if request.user.has_perm("baza_firm_delete_company"):
+#                 company.delete()
+#                 return redirect('company-list')
+#             else:
+#                 return redirect('company-list')
+def remove_company(request, new_company_id):
+    if request.user.has_perm("baza_firm.delete_company"):
+        t = Company.objects.get(pk=new_company_id)
+        t.delete()
+    else:
+        print('Hej ')
 
-    Widok jest jednak chroniony PermissionRequiredMixin i usunąć może ją tylko superuser.
-    """
-    permission_required = 'baza_firm_app.delete'
-    def get(self, request, new_company_id):
-        company = Company.objects.get(id=new_company_id)
-        company.delete()
-        return redirect('company-list')
 
-    def post(self, request):
-        company = Company.objects.get(id=new_company_id)
-        company.delete()
-        return redirect('company-list')
 
 
 
@@ -157,7 +165,9 @@ class AddCommentView(LoginRequiredMixin, View):
             comment = form.cleaned_data['comment']
             compComment = Comments.objects.create(company_name=company_name, author_name=author_name, comment=comment)
             compComment.save()
-        return redirect('comments-list')
+            return redirect('comments-list')
+        else:
+            return render(request, 'add_comment.html', {'form': form})
 
 
 

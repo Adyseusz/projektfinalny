@@ -1,27 +1,32 @@
 from django.test import TestCase
 import pytest
 from .models import Company, Comments
+from django.contrib.auth.models import User
 
 # Create your tests here.
 
 @pytest.mark.django_db
-def test_AddCompanyView(client):
-    response = client.post('/add-company/', {'name': 'Test', 'description': 'testowy opis', 'contact': 'twest@tes.pl', 'services': 'S', 'city': 'Warsa', 'have_stationary': 'TAK'})
+def test_AddCompanyView(client, basicuser, city, service, stationary, attributes):
+    client.force_login(basicuser)
+    response = client.post('/add-company/', {'name': "Test", 'description': 'testowy opis', 'contact': 'twest@tes.pl', 'city': city.id, 'services': service.id, 'have_stationary': stationary.id, 'attribute_company': attributes.id})
     assert response.status_code == 302
-    assert Company.objects.filter(name='Test')
 
-# @pytest.mark.django_db
-# def test_AddCommentView(client_with_authorised_user):
-#     response = client_with_authorised_user.post('/add-comment/', {'company_name': 'Google', 'author_name': 'testowy autor', 'comment': 'Komentarz'})
-#     assert response.status_code == 302
-#     assert Comments.objects.filter(company_name='Google')
-#
+    assert Company.objects.get(name="Test")
 
-#sprawdzenie czy zwykły użytkownik może usunąć firmę
 @pytest.mark.django_db
-def test_delete_company(client):
-    response = client.post('/company/delete/12')
+def test_AddCommentView(client, basicuser, test_company):
+    client.force_login(basicuser)
+    response = client.post('/add_comment/', {'company_name': test_company.id, 'author_name': 'testowy autor', 'comment': 'Komentarz'})
     assert response.status_code == 302
+    assert Comments.objects.filter(company_name=test_company.id)
+
+@pytest.mark.django_db
+def test_search(client, test_company):
+    response = client.post('/search-company/', {'name': 'Tes'})
+
+    assert Company.objects.get(name__icontains='tes')
+
+
 
 #sprawdzenie czy niezalogowany użytkownik może dodać komentarz (tylko zalogowani użytkownicy mogą dodać komentarz)
 @pytest.mark.django_db
@@ -29,11 +34,32 @@ def test_add_comment(client):
     response = client.post('/add_comment/', {'company_name': 'Google', 'author_name': 'testowy autor', 'comment': 'Komentarz'})
     assert response.status_code == 302
 
+@pytest.mark.django_db
+def test_add_company_without_login(client, city, service, stationary, attributes):
+    response = client.post('/add-company/', {'name': "Test", 'description': 'testowy opis', 'contact': 'twest@tes.pl', 'city': city.id, 'services': service.id, 'have_stationary': stationary.id, 'attribute_company': attributes.id})
+    assert response.status_code == 302
+#
+# @pytest.mark.django_db
+# def test_company_delete(client, basicuser, test_company):
+#     client.force_login(basicuser)
+#
+#     response = client.post(f'/company/delete/{test_company.id}/')
+#     assert response.status_code == 404
 
 
 @pytest.mark.django_db
-def test_add_company_without_login(client):
-    response = client.get('/add-company/')
+def test_company_delete_super(client, superuser, test_company):
+    client.force_login(superuser)
+
+
+    response = client.post(f'/company/delete/{test_company.id}/')
     assert response.status_code == 302
+    assert len(Company.objects.filter(name='test')) == 0
 
 
+
+# @pytest.mark.django_db
+# def test_register(client):
+#     response = client.post('/accounts/signup/', {'username': 'Test', 'password1': 'CodersLab123!'})
+#     assert response.status_code == 200
+#     assert User.objects.get(username='Test')

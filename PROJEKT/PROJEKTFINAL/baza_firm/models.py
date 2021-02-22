@@ -17,7 +17,7 @@ class Company(models.Model):
     contact = models.EmailField(max_length=500)
     services = models.ForeignKey('CategoryServices', on_delete=models.CASCADE, null=True)
     city = models.ForeignKey('City', on_delete=models.CASCADE, null=True)
-    have_stationary = models.ForeignKey('Stationary', on_delete=models.CASCADE, null='Brak danych')
+    have_stationary = models.ForeignKey('Stationary', on_delete=models.CASCADE, null=True)
     atribute_comp = models.ManyToManyField('AttributesCompany')
     def __str__(self):
         return self.name
@@ -58,7 +58,7 @@ class City(models.Model):
 
 
 class AttributesCompany(models.Model):
-    atribute_choice = models.CharField(max_length=500, default='')
+    atribute_choice = models.CharField(max_length=500, default='Brak danych')
     def __str__(self):
         return self.atribute_choice
 
