@@ -2,6 +2,7 @@ from django.test import TestCase
 import pytest
 from .models import Company, Comments
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Permission
 
 # Create your tests here.
 
@@ -51,11 +52,12 @@ def test_company_delete(client, basicuser, test_company):
 def test_company_delete_super(client, superuser, test_company):
     client.force_login(superuser)
 
-    response = client.post(f'/company/delete/{test_company.id}/')
-    print(response.content)
 
-    assert len(Company.objects.filter(name='Test')) == 0
+    response = client.get(f'/company/delete/{test_company.id}')
+    print(response.content)
     assert response.status_code == 302
+    assert len(Company.objects.filter(name='test')) == 0
+
 
 
 
